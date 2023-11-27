@@ -4,13 +4,14 @@ const InputForm = ({ addTransaction }) => {
     const [description, setDescription] = useState('');
     const [amount, setAmount] = useState('');
     const [type, setType] = useState('income'); // 'income' for receita, 'expense' for despesa
+    const [paymentType, setPaymentType] = useState(''); // Novo campo para o tipo de pagamento
   
     const handleSubmit = (e) => {
       e.preventDefault();
   
       // Validar entrada
-      if (description.trim() === '' || isNaN(amount)) {
-        alert('Por favor, insira uma descrição e um valor válido.');
+      if (description.trim() === '' || isNaN(amount) || paymentType.trim() === '') {
+        alert('Por favor, preencha todos os campos corretamente.');
         return;
       }
   
@@ -19,6 +20,7 @@ const InputForm = ({ addTransaction }) => {
         id: new Date().getTime(),
         description,
         amount: type === 'income' ? +amount : -amount,
+        paymentType,
       };
   
       addTransaction(newTransaction);
@@ -26,6 +28,7 @@ const InputForm = ({ addTransaction }) => {
       // Limpar campos
       setDescription('');
       setAmount('');
+      setPaymentType('');
     };
   
     return (
@@ -52,6 +55,14 @@ const InputForm = ({ addTransaction }) => {
             <option value="income">Receita</option>
             <option value="expense">Despesa</option>
           </select>
+        </label>
+        <label>
+          Tipo de Pagamento:
+          <input
+            type="text"
+            value={paymentType}
+            onChange={(e) => setPaymentType(e.target.value)}
+          />
         </label>
         <button type="submit">Adicionar Transação</button>
       </form>
