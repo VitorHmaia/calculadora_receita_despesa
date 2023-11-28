@@ -2,12 +2,13 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+// Styled Components for InputForm
 const FormContainer = styled.form`
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-width: 400px; /* Adicionado para limitar a largura do formulário em telas maiores */
-  margin: 0 auto; /* Adicionado para centralizar o formulário */
+  max-width: 400px; /* Added to limit the width of the form on larger screens */
+  margin: 0 auto; /* Added to center the form */
 `;
 
 const FormLabel = styled.label`
@@ -46,20 +47,25 @@ const FormButton = styled.button`
   }
 `;
 
+// InputForm component
 const InputForm = ({ addTransaction }) => {
+  // State for managing form input values
   const [description, setDescription] = useState('');
   const [amount, setAmount] = useState('');
   const [type, setType] = useState('income');
   const [paymentType, setPaymentType] = useState('');
 
+  // Handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Validate form inputs
     if (description.trim() === '' || isNaN(amount) || paymentType.trim() === '') {
       alert('Por favor, preencha todos os campos corretamente.');
       return;
     }
 
+    // Create a new transaction object
     const newTransaction = {
       id: new Date().getTime(),
       description,
@@ -67,8 +73,10 @@ const InputForm = ({ addTransaction }) => {
       paymentType,
     };
 
+    // Call the addTransaction function with the new transaction
     addTransaction(newTransaction);
 
+    // Clear form input values
     setDescription('');
     setAmount('');
     setPaymentType('');

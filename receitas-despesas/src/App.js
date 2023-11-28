@@ -7,6 +7,7 @@ import styled from 'styled-components';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Styled Components for App Layout
 const AppContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -48,15 +49,18 @@ const Title = styled.h1`
 `;
 
 const App = () => {
+  // State for managing transactions
   const [transactions, setTransactions] = useState([]);
   const [incomeTransactions, setIncomeTransactions] = useState([]);
   const [expenseTransactions, setExpenseTransactions] = useState([]);
 
+  // Load transactions from local storage on component mount
   useEffect(() => {
     const storedTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
     setTransactions(storedTransactions);
   }, []);
 
+  // Update local storage and separate transactions into income and expenses on state change
   useEffect(() => {
     localStorage.setItem('transactions', JSON.stringify(transactions));
 
@@ -67,11 +71,14 @@ const App = () => {
     setExpenseTransactions(expenses);
   }, [transactions]);
 
+  // Add a new transaction
   const addTransaction = (newTransaction) => {
+    // Check available local storage space
     const currentStorageSize = JSON.stringify(localStorage).length;
-    const maxStorageSize = 5000000;
+    const maxStorageSize = 5000000; // Example: 5 MB
 
     if (currentStorageSize + JSON.stringify(newTransaction).length > maxStorageSize) {
+      // Save all transactions to a JSON file if local storage is exceeded
       const allTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
       allTransactions.push(newTransaction);
 
@@ -86,22 +93,22 @@ const App = () => {
       localStorage.removeItem('transactions');
       setTransactions([]);
     } else {
+      // Add the new transaction to the state
       setTransactions([...transactions, newTransaction]);
 
+      // Display a notification for new expenses and incomes
       if (newTransaction.amount < 0) {
-        // Exibir notificação para novas despesas
         toast.dark(`Nova Despesa: ${newTransaction.description}`, {
           position: 'bottom-left',
-          autoClose: 3000, // Fechar após 3 segundos
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: false,
         });
       } else {
-        // Exibir notificação para novas receitas
         toast.success(`Nova Receita: ${newTransaction.description}`, {
           position: 'bottom-left',
-          autoClose: 3000, // Fechar após 3 segundos
+          autoClose: 3000,
           hideProgressBar: true,
           closeOnClick: true,
           pauseOnHover: false,
@@ -110,6 +117,7 @@ const App = () => {
     }
   };
 
+  // Delete a transaction
   const deleteTransaction = (id) => {
     const updatedTransactions = transactions.filter((transaction) => transaction.id !== id);
     setTransactions(updatedTransactions);
@@ -140,6 +148,7 @@ const App = () => {
         <Balance transactions={transactions} />
       </ContentContainer>
 
+      {/* ToastContainer for notifications */}
       <ToastContainer position="bottom-left" />
     </AppContainer>
   );

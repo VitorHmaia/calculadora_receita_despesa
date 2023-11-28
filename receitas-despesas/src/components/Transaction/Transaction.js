@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
+// Styled Components for Transaction
 const ListItem = styled.li`
   background-color: #373d48;
   padding: 10px;
@@ -66,8 +67,8 @@ const PopupOverlay = styled.div`
 `;
 
 const PopupContent = styled.div`
-  background-color: #1e1e1e; /* Cor de fundo da aplicação */
-  color: #ffffff; /* Cor do texto da aplicação */
+  background-color: #1e1e1e; /* Background color of the application */
+  color: #ffffff; /* Text color of the application */
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
@@ -122,22 +123,28 @@ const CloseButton = styled.button`
   }
 `;
 
+// Format currency function
 const formatCurrency = (value) => {
   return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 };
 
+// Transaction component
 const Transaction = ({ transaction, deleteTransaction }) => {
+  // State for managing details and delete confirmation visibility
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
 
+  // Toggle details visibility
   const handleToggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
+  // Toggle delete confirmation visibility
   const handleToggleDeleteConfirmation = () => {
     setShowDeleteConfirmation(!showDeleteConfirmation);
   };
 
+  // Delete transaction and hide delete confirmation
   const handleDelete = () => {
     deleteTransaction(transaction.id);
     setShowDeleteConfirmation(false);
@@ -150,6 +157,8 @@ const Transaction = ({ transaction, deleteTransaction }) => {
       </span>
       <DetailsButton onClick={handleToggleDetails}>Ver Detalhes</DetailsButton>
       <DeleteButton onClick={handleToggleDeleteConfirmation}>Excluir</DeleteButton>
+
+      {/* Details popup */}
       {showDetails && (
         <PopupOverlay>
           <PopupContent>
@@ -162,6 +171,8 @@ const Transaction = ({ transaction, deleteTransaction }) => {
           </PopupContent>
         </PopupOverlay>
       )}
+
+      {/* Delete confirmation popup */}
       {showDeleteConfirmation && (
         <PopupOverlay>
           <PopupContent>
