@@ -4,6 +4,8 @@ import InputForm from './components/InputForm/InputForm';
 import TransactionList from './components/TransactionList/TransactionList';
 import Balance from './components/Balance/Balance';
 import styled from 'styled-components';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const AppContainer = styled.div`
   display: flex;
@@ -85,6 +87,26 @@ const App = () => {
       setTransactions([]);
     } else {
       setTransactions([...transactions, newTransaction]);
+
+      if (newTransaction.amount < 0) {
+        // Exibir notificação para novas despesas
+        toast.dark(`Nova Despesa: ${newTransaction.description}`, {
+          position: 'bottom-left',
+          autoClose: 3000, // Fechar após 3 segundos
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+        });
+      } else {
+        // Exibir notificação para novas receitas
+        toast.success(`Nova Receita: ${newTransaction.description}`, {
+          position: 'bottom-left',
+          autoClose: 3000, // Fechar após 3 segundos
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: false,
+        });
+      }
     }
   };
 
@@ -117,6 +139,8 @@ const App = () => {
 
         <Balance transactions={transactions} />
       </ContentContainer>
+
+      <ToastContainer position="bottom-left" />
     </AppContainer>
   );
 };
