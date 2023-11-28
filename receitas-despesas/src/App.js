@@ -1,7 +1,49 @@
+// App.js
 import React, { useState, useEffect } from 'react';
 import InputForm from './components/InputForm/InputForm';
 import TransactionList from './components/TransactionList/TransactionList';
 import Balance from './components/Balance/Balance';
+import styled from 'styled-components';
+
+const AppContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #282c34;
+  color: #ffffff;
+  font-family: 'Roboto', sans-serif;
+  padding: 10px;
+  box-sizing: border-box;
+`;
+
+const ContentContainer = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 1200px;
+  box-sizing: border-box;
+`;
+
+const FormContainer = styled.div`
+  width: 30%;
+  box-sizing: border-box;
+`;
+
+const TransactionTablesContainer = styled.div`
+  width: 65%;
+  box-sizing: border-box;
+`;
+
+const TransactionTables = styled.div`
+  display: flex;
+  justify-content: space-between;
+`;
+
+const Title = styled.h1`
+  text-align: center;
+`;
 
 const App = () => {
   const [transactions, setTransactions] = useState([]);
@@ -9,16 +51,13 @@ const App = () => {
   const [expenseTransactions, setExpenseTransactions] = useState([]);
 
   useEffect(() => {
-    // Recuperar transações do Local Storage ao carregar a página
     const storedTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
     setTransactions(storedTransactions);
   }, []);
 
   useEffect(() => {
-    // Atualizar o Local Storage sempre que as transações mudarem
     localStorage.setItem('transactions', JSON.stringify(transactions));
 
-    // Atualizar listas de receitas e despesas
     const income = transactions.filter((transaction) => transaction.amount > 0);
     const expenses = transactions.filter((transaction) => transaction.amount < 0);
 
@@ -27,7 +66,26 @@ const App = () => {
   }, [transactions]);
 
   const addTransaction = (newTransaction) => {
-    setTransactions([...transactions, newTransaction]);
+    const currentStorageSize = JSON.stringify(localStorage).length;
+    const maxStorageSize = 5000000;
+
+    if (currentStorageSize + JSON.stringify(newTransaction).length > maxStorageSize) {
+      const allTransactions = JSON.parse(localStorage.getItem('transactions')) || [];
+      allTransactions.push(newTransaction);
+
+      const jsonToSave = JSON.stringify(allTransactions);
+      const blob = new Blob([jsonToSave], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'saved_transactions.json';
+      a.click();
+
+      localStorage.removeItem('transactions');
+      setTransactions([]);
+    } else {
+      setTransactions([...transactions, newTransaction]);
+    }
   };
 
   const deleteTransaction = (id) => {
@@ -36,22 +94,30 @@ const App = () => {
   };
 
   return (
-    <div>
-      <h1>Calculadora de Receitas e Despesas</h1>
-      <InputForm addTransaction={addTransaction} />
-      
-      <div>
-        <h2>Receitas</h2>
-        <TransactionList transactions={incomeTransactions} deleteTransaction={deleteTransaction} />
-      </div>
+    <AppContainer>
+      <Title>Calculadora de Receitas e Despesas</Title>
+      <ContentContainer>
+        <FormContainer>
+          <InputForm addTransaction={addTransaction} />
+        </FormContainer>
 
-      <div>
-        <h2>Despesas</h2>
-        <TransactionList transactions={expenseTransactions} deleteTransaction={deleteTransaction} />
-      </div>
+        <TransactionTablesContainer>
+          <TransactionTables>
+            <div>
+              <h2>Receitas</h2>
+              <TransactionList transactions={incomeTransactions} deleteTransaction={deleteTransaction} />
+            </div>
 
-      <Balance transactions={transactions} />
-    </div>
+            <div>
+              <h2>Despesas</h2>
+              <TransactionList transactions={expenseTransactions} deleteTransaction={deleteTransaction} />
+            </div>
+          </TransactionTables>
+        </TransactionTablesContainer>
+
+        <Balance transactions={transactions} />
+      </ContentContainer>
+    </AppContainer>
   );
 };
 
